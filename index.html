@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chef Claude | AI Baking Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧁</text></svg>">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">🧁</span>
+          <h1>Chef Claude</h1>
+        </div>
+        <p class="tagline">Your AI Baking Companion</p>
+      </div>
+
+      <!-- Recipe Panel (shown when active) -->
+      <div class="recipe-panel" id="recipePanel">
+        <div class="recipe-header">
+          <h3 id="recipeTitle">No Active Recipe</h3>
+          <button class="btn-icon" id="closeRecipeBtn" title="Close Recipe">✕</button>
+        </div>
+        <div class="recipe-meta" id="recipeMeta">
+          <!-- Prep time, cook time, servings -->
+        </div>
+        <div class="recipe-progress" id="recipeProgress">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <span class="progress-text" id="progressText">Step 0 of 0</span>
+        </div>
+        <div class="ingredients-section" id="ingredientsSection">
+          <h4>Ingredients</h4>
+          <ul id="ingredientsList"></ul>
+        </div>
+        <div class="steps-section" id="stepsSection">
+          <h4>Steps</h4>
+          <ol id="stepsList"></ol>
+        </div>
+        <div class="recipe-actions">
+          <button class="btn btn-secondary" id="prevStepBtn">← Previous</button>
+          <button class="btn btn-primary" id="nextStepBtn">Next Step →</button>
+        </div>
+      </div>
+
+      <!-- Preferences -->
+      <div class="preferences-section">
+        <button class="preferences-toggle" id="preferencesToggle">
+          <span>⚙️</span> Preferences
+        </button>
+        <div class="preferences-panel" id="preferencesPanel">
+          <div class="pref-group">
+            <label>Skill Level</label>
+            <select id="skillLevel">
+              <option value="beginner">Beginner</option>
+              <option value="intermediate" selected>Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+          <div class="pref-group">
+            <label>Measurement Units</label>
+            <select id="units">
+              <option value="us" selected>US (cups, oz)</option>
+              <option value="metric">Metric (g, ml)</option>
+              <option value="uk">UK Imperial</option>
+            </select>
+          </div>
+          <div class="pref-group">
+            <label>Dietary Restrictions</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" value="vegetarian"> Vegetarian</label>
+              <label><input type="checkbox" value="vegan"> Vegan</label>
+              <label><input type="checkbox" value="gluten-free"> Gluten-Free</label>
+              <label><input type="checkbox" value="dairy-free"> Dairy-Free</label>
+              <label><input type="checkbox" value="nut-free"> Nut-Free</label>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="savePrefsBtn">Save Preferences</button>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-ghost" id="newChatBtn">
+          <span>+</span> New Conversation
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="chat-main">
+      <!-- Mobile Header -->
+      <header class="mobile-header">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <h1>Chef Claude</h1>
+      </header>
+
+      <!-- Chat Messages -->
+      <div class="chat-container" id="chatContainer">
+        <div class="chat-messages" id="chatMessages">
+          <!-- Welcome Message -->
+          <div class="message assistant">
+            <div class="message-avatar">👨‍🍳</div>
+            <div class="message-content">
+              <div class="message-text">
+                <p>Welcome to my kitchen! I'm Chef Claude, your AI baking companion. 🧁</p>
+                <p>I can help you with:</p>
+                <ul>
+                  <li>Creating custom recipes based on your preferences</li>
+                  <li>Step-by-step baking guidance</li>
+                  <li>Ingredient substitutions</li>
+                  <li>Troubleshooting baking problems</li>
+                </ul>
+                <p>What shall we bake today?</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+          <div class="message-avatar">👨‍🍳</div>
+          <div class="typing-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Input -->
+      <div class="chat-input-container">
+        <div class="quick-actions">
+          <button class="quick-action" data-prompt="Give me a simple recipe for chocolate chip cookies">🍪 Cookies</button>
+          <button class="quick-action" data-prompt="I want to make a birthday cake">🎂 Cake</button>
+          <button class="quick-action" data-prompt="What can I bake with bananas?">🍌 Banana treats</button>
+          <button class="quick-action" data-prompt="Help me make fresh bread">🍞 Bread</button>
+        </div>
+        <form class="chat-form" id="chatForm">
+          <div class="input-wrapper">
+            <textarea 
+              id="messageInput" 
+              placeholder="Ask me anything about baking..."
+              rows="1"
+              autofocus
+            ></textarea>
+            <button type="submit" class="send-btn" id="sendBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13"/>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

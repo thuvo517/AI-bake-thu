@@ -1,0 +1,27 @@
+{
+  "name": "ai-baking-assistant",
+  "version": "1.0.0",
+  "description": "AI-powered baking assistant using Cloudflare Workers, Llama 3.3, and Durable Objects",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:production": "wrangler deploy --env production",
+    "tail": "wrangler tail",
+    "pages:dev": "cd frontend && npx serve .",
+    "pages:deploy": "wrangler pages deploy frontend --project-name=ai-baking-assistant-ui"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "ai",
+    "llama",
+    "baking",
+    "durable-objects"
+  ],
+  "author": "Lam",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.80.0"
+  }
+}

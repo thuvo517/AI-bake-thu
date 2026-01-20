@@ -1,0 +1,26 @@
+# AI Baking Assistant - Cloudflare Workers Configuration
+name = "ai-baking-assistant"
+main = "src/index.js"
+compatibility_date = "2024-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Workers AI binding for Llama 3.3
+[ai]
+binding = "AI"
+
+# Durable Objects configuration
+[[durable_objects.bindings]]
+name = "CHAT_SESSION"
+class_name = "ChatSession"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["ChatSession"]
+
+# Environment variables
+[vars]
+ENVIRONMENT = "development"
+
+# Production environment
+[env.production]
+vars = { ENVIRONMENT = "production" }
