@@ -22,6 +22,6 @@
   "author": "Lam",
   "license": "MIT",
   "devDependencies": {
-    "wrangler": "^3.80.0"
+    "wrangler": "^4.59.3"
   }
 }

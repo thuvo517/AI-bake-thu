@@ -1,3 +1,5 @@
+workers_dev = true
+
 # AI Baking Assistant - Cloudflare Workers Configuration
 name = "ai-baking-assistant"
 main = "src/index.js"
