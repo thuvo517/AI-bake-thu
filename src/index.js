@@ -28,15 +28,15 @@ function jsonResponse(data, status = 200) {
 // Helper to get or create session ID
 function getSessionId(request) {
   const url = new URL(request.url);
-  
+
   // Check header first, then query param
   let sessionId = request.headers.get('X-Session-ID') || url.searchParams.get('sessionId');
-  
+
   // Generate new session ID if none provided
   if (!sessionId) {
     sessionId = crypto.randomUUID();
   }
-  
+
   return sessionId;
 }
 
@@ -61,13 +61,13 @@ export default {
     try {
       // API routes
       if (url.pathname.startsWith('/api/')) {
-        return handleApiRoute(request, env, url);
+        return await handleApiRoute(request, env, url);
       }
 
       // Health check
       if (url.pathname === '/health') {
-        return jsonResponse({ 
-          status: 'healthy', 
+        return jsonResponse({
+          status: 'healthy',
           timestamp: Date.now(),
           version: '1.0.0'
         });
@@ -78,9 +78,14 @@ export default {
 
     } catch (error) {
       console.error('Worker Error:', error);
-      return jsonResponse({ 
-        error: 'Internal Server Error', 
-        message: error.message 
+
+      // Malformed/missing JSON request body
+      if (error instanceof SyntaxError) {
+        return jsonResponse({ error: 'Invalid JSON in request body' }, 400);
+      }
+
+      return jsonResponse({
+        error: 'Internal Server Error'
       }, 500);
     }
   }
@@ -127,10 +132,10 @@ async function handleApiRoute(request, env, url) {
     // Save assistant response to history
     await sessionStub.fetch(new Request('http://internal/message', {
       method: 'POST',
-      body: JSON.stringify({ 
-        role: 'assistant', 
+      body: JSON.stringify({
+        role: 'assistant',
         content: aiResponse.message,
-        metadata: { 
+        metadata: {
           type: aiResponse.type,
           hasRecipe: aiResponse.type === 'recipe'
         }
@@ -167,7 +172,7 @@ async function handleApiRoute(request, env, url) {
       const prefs = await response.json();
       return jsonResponse({ sessionId, preferences: prefs });
     }
-    
+
     if (method === 'POST' || method === 'PUT') {
       const body = await request.json();
       const response = await sessionStub.fetch(new Request('http://internal/preferences', {
@@ -184,13 +189,13 @@ async function handleApiRoute(request, env, url) {
     if (method === 'GET') {
       const response = await sessionStub.fetch(new Request('http://internal/state'));
       const state = await response.json();
-      return jsonResponse({ 
-        sessionId, 
+      return jsonResponse({
+        sessionId,
         recipe: state.activeRecipe,
-        currentStep: state.currentStep 
+        currentStep: state.currentStep
       });
     }
-    
+
     if (method === 'DELETE') {
       const response = await sessionStub.fetch(new Request('http://internal/recipe', {
         method: 'DELETE'
@@ -236,16 +241,16 @@ async function handleApiRoute(request, env, url) {
     const sessionState = await stateResponse.json();
 
     if (!sessionState.activeRecipe) {
-      return jsonResponse({ 
-        error: 'No active recipe. Start a recipe first!' 
+      return jsonResponse({
+        error: 'No active recipe. Start a recipe first!'
       }, 400);
     }
 
     const currentStepData = sessionState.activeRecipe.steps?.[sessionState.currentStep - 1];
-    
+
     // Build context-aware prompt
     const helpMessage = question || `Help me with step ${sessionState.currentStep}`;
-    
+
     const aiService = new AIService(env.AI);
     const aiResponse = await aiService.generateResponse(helpMessage, sessionState);
 
