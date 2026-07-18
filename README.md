@@ -1,21 +1,19 @@
-# 🧁 Chef Claude - AI Baking Assistant
+# Chef Thu - AI Baking Assistant
 
-A full-stack AI cooking assistant built with Cloudflare Workers, Llama 3.3, and Durable Objects. Get personalized recipes and step-by-step cooking guidance in an interactive chat interface.
+An AI baking assistant built on Cloudflare Workers, using Llama 3.3 for recipe generation and Durable Objects to keep track of session state. Chat with it about what you want to bake and it walks you through the recipe step by step.
 
-![Chef Claude Banner](https://via.placeholder.com/800x300/8B5A2B/FDF6E9?text=Chef+Claude+-+AI+Baking+Assistant)
+## Features
 
-## ✨ Features
+- Generates custom recipes from Llama 3.3 based on what you ask for
+- Step-by-step walkthrough with progress tracking
+- Conversation history and recipe progress persisted per session via Durable Objects
+- User preferences for skill level, dietary restrictions, and measurement units
+- Ingredient checklist you can tick off as you go
+- Troubleshooting help if a step goes wrong
+- Responsive layout, works fine on mobile
+- Runs on Cloudflare's edge network
 
-- **AI-Powered Recipe Generation**: Get custom recipes based on your preferences using Llama 3.3
-- **Step-by-Step Guidance**: Interactive recipe walkthroughs with progress tracking
-- **Persistent Sessions**: Conversation history and recipe progress saved via Durable Objects
-- **User Preferences**: Customize skill level, dietary restrictions, and measurement units
-- **Ingredient Checklist**: Track ingredients as you gather them
-- **Troubleshooting Help**: Get AI assistance when things go wrong
-- **Mobile Responsive**: Works great on all devices
-- **Edge-Optimized**: Deployed globally on Cloudflare's edge network
-
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -42,7 +40,7 @@ A full-stack AI cooking assistant built with Cloudflare Workers, Llama 3.3, and 
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 📁 Project Structure
+## Project structure
 
 ```
 ai-baking-assistant/
@@ -60,11 +58,10 @@ ai-baking-assistant/
 │   └── app.js                      # Frontend JavaScript
 ├── wrangler.toml                   # Cloudflare configuration
 ├── package.json
-├── PLAN.md                         # Development plan
 └── README.md
 ```
 
-## 🚀 Quick Start
+## Getting started
 
 ### Prerequisites
 
@@ -74,51 +71,51 @@ ai-baking-assistant/
 
 ### Installation
 
-1. **Clone the repository**
+1. Clone the repo
    ```bash
-   git clone https://github.com/yourusername/ai-baking-assistant.git
-   cd ai-baking-assistant
+   git clone git@github.com:VirdVissy/ai-baking.git
+   cd ai-baking
    ```
 
-2. **Install dependencies**
+2. Install dependencies
    ```bash
    npm install
    ```
 
-3. **Login to Cloudflare**
+3. Log in to Cloudflare
    ```bash
    wrangler login
    ```
 
-4. **Run locally**
+4. Run the worker locally
    ```bash
    npm run dev
    ```
-   The Worker will start at `http://localhost:8787`
+   Starts at `http://localhost:8787`
 
-5. **In a separate terminal, serve the frontend**
+5. In a separate terminal, serve the frontend
    ```bash
    npm run pages:dev
    ```
-   Frontend will be available at `http://localhost:3000`
+   Available at `http://localhost:3000`
 
 ### Deployment
 
-1. **Deploy the Worker**
+1. Deploy the Worker
    ```bash
    npm run deploy
    ```
 
-2. **Deploy the Frontend to Cloudflare Pages**
+2. Deploy the frontend to Cloudflare Pages
    ```bash
    npm run pages:deploy
    ```
 
-3. **Update the API URL** in `frontend/app.js` to point to your deployed Worker URL.
+3. Update the API URL in `frontend/app.js` to point at your deployed Worker.
 
-## 🔌 API Reference
+## API reference
 
-All endpoints require the `X-Session-ID` header for session tracking.
+All endpoints expect an `X-Session-ID` header for session tracking.
 
 ### Chat
 
@@ -155,15 +152,15 @@ Send a message and get an AI response.
 
 ### Session
 
-**GET /api/session** - Get current session state
+**GET /api/session** - get current session state
 
-**DELETE /api/session** - Clear session and start fresh
+**DELETE /api/session** - clear session and start fresh
 
 ### Preferences
 
-**GET /api/preferences** - Get user preferences
+**GET /api/preferences** - get user preferences
 
-**POST /api/preferences** - Update preferences
+**POST /api/preferences** - update preferences
 ```json
 {
   "skillLevel": "intermediate",
@@ -174,32 +171,32 @@ Send a message and get an AI response.
 
 ### Recipe
 
-**GET /api/recipe** - Get active recipe
+**GET /api/recipe** - get active recipe
 
-**DELETE /api/recipe** - Clear active recipe
+**DELETE /api/recipe** - clear active recipe
 
-### Step Navigation
+### Step navigation
 
 **POST /api/step**
 ```json
-{ "action": "next" }  // Advance to next step
-{ "action": "prev" }  // Go back one step
-{ "action": "set", "step": 3 }  // Jump to specific step
+{ "action": "next" }  // advance to next step
+{ "action": "prev" }  // go back one step
+{ "action": "set", "step": 3 }  // jump to a specific step
 ```
 
-### Complete Recipe
+### Complete recipe
 
-**POST /api/complete** - Mark recipe as completed
+**POST /api/complete** - mark recipe as completed
 
-## 🎨 Customization
+## Customization
 
-### Changing the AI Persona
+### Changing the AI persona
 
-Edit `src/utils/prompts.js` to customize the AI assistant's personality and behavior.
+Edit `src/utils/prompts.js` to change the assistant's personality and behavior.
 
 ### Theming
 
-The frontend uses CSS variables for easy theming. Edit the `:root` section in `frontend/styles.css`:
+The frontend uses CSS variables. Edit the `:root` section in `frontend/styles.css`:
 
 ```css
 :root {
@@ -210,70 +207,56 @@ The frontend uses CSS variables for easy theming. Edit the `:root` section in `f
 }
 ```
 
-### Adding New Features
+### Adding new features
 
 1. Add new endpoints in `src/index.js`
 2. Add state management methods in `src/durable-objects/ChatSession.js`
 3. Update the frontend in `frontend/app.js`
 
-## 🧪 Testing
-
-### Local Testing
+## Testing
 
 ```bash
-# Start the worker
+# start the worker
 npm run dev
 
-# In another terminal, test the API
+# in another terminal, hit the API
 curl -X POST http://localhost:8787/api/chat \
   -H "Content-Type: application/json" \
   -H "X-Session-ID: test-session" \
   -d '{"message": "Give me a simple cookie recipe"}'
 ```
 
-### View Logs
-
+View logs with:
 ```bash
 wrangler tail
 ```
 
-## 📊 Monitoring
+## Monitoring
 
-After deployment, monitor your Worker in the [Cloudflare Dashboard](https://dash.cloudflare.com/):
+After deploying, you can monitor the Worker from the [Cloudflare Dashboard](https://dash.cloudflare.com/) under Workers & Pages → Your Worker → Analytics, which shows requests, errors, and latency.
 
-- Workers & Pages → Your Worker → Analytics
-- View requests, errors, and latency metrics
+## Security notes
 
-## 🔐 Security Considerations
+- Session IDs live in localStorage
+- No authentication yet - add it if you need it
+- All state is stored in Durable Objects, isolated per session
+- CORS currently allows all origins - restrict this before running in production
 
-- Session IDs are stored in localStorage
-- No authentication implemented (add as needed)
-- All data is stored in Durable Objects (isolated per session)
-- CORS is configured to allow all origins (restrict for production)
+## Tips for better results
 
-## 💡 Tips for Better Results
+1. Be specific - "soft, chewy chocolate chip cookies" works better than just "cookies"
+2. Mention restrictions - "gluten-free banana bread" gets you an appropriate recipe
+3. Ask for help - "my cookies are too flat, what went wrong?" for troubleshooting
+4. Use step help - ask questions while on a specific step for context-aware answers
 
-1. **Be specific**: "I want soft, chewy chocolate chip cookies" works better than "cookies"
-2. **Mention restrictions**: "gluten-free banana bread" will get appropriate recipes
-3. **Ask for help**: "My cookies are too flat, what went wrong?" for troubleshooting
-4. **Use step help**: Ask questions while on a specific step for contextual guidance
+## Tech stack
 
-## 🛠️ Tech Stack
+- Runtime: Cloudflare Workers
+- AI: Workers AI (Llama 3.3 70B Instruct)
+- State: Durable Objects
+- Frontend: vanilla JS + CSS, no frameworks
+- Hosting: Cloudflare Pages
 
-- **Runtime**: Cloudflare Workers
-- **AI**: Workers AI (Llama 3.3 70B Instruct)
-- **State**: Durable Objects
-- **Frontend**: Vanilla JS + CSS (no frameworks)
-- **Hosting**: Cloudflare Pages
+## License
 
-## 📝 License
-
-MIT License - feel free to use this for your own projects!
-
-## 🤝 Contributing
-
-Contributions welcome! Please feel free to submit a Pull Request.
-
----
-
-Built with ❤️ and 🧁 using Cloudflare Workers
+MIT
