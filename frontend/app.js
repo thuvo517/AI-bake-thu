@@ -266,9 +266,19 @@ function addMessageToUI(role, content, metadata = {}) {
   elements.chatMessages.appendChild(messageDiv);
 }
 
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function formatMessageContent(content) {
   if (!content) return '';
-  
+
   // Basic markdown-style formatting
   let formatted = content
     // Escape HTML
@@ -294,14 +304,14 @@ function formatMessageContent(content) {
 function renderRecipeCard(recipe) {
   return `
     <div class="recipe-card">
-      <h4>${recipe.title}</h4>
+      <h4>${escapeHtml(recipe.title)}</h4>
       <div class="recipe-card-meta">
-        <span>⏱️ Prep: ${recipe.prepTime}</span>
-        <span>🔥 Cook: ${recipe.cookTime}</span>
-        <span>🍽️ Serves: ${recipe.servings}</span>
-        <span>📊 ${capitalizeFirst(recipe.difficulty)}</span>
+        <span>⏱️ Prep: ${escapeHtml(recipe.prepTime)}</span>
+        <span>🔥 Cook: ${escapeHtml(recipe.cookTime)}</span>
+        <span>🍽️ Serves: ${escapeHtml(recipe.servings)}</span>
+        <span>📊 ${escapeHtml(capitalizeFirst(recipe.difficulty))}</span>
       </div>
-      <p>${recipe.description}</p>
+      <p>${escapeHtml(recipe.description)}</p>
       <button class="btn btn-primary start-recipe-btn start-btn">
         Start Cooking! 🧑‍🍳
       </button>
@@ -322,16 +332,16 @@ function renderRecipePanel() {
   elements.recipeTitle.textContent = recipe.title;
   
   elements.recipeMeta.innerHTML = `
-    <span>⏱️ ${recipe.prepTime}</span>
-    <span>🔥 ${recipe.cookTime}</span>
-    <span>🍽️ ${recipe.servings}</span>
+    <span>⏱️ ${escapeHtml(recipe.prepTime)}</span>
+    <span>🔥 ${escapeHtml(recipe.cookTime)}</span>
+    <span>🍽️ ${escapeHtml(recipe.servings)}</span>
   `;
 
   // Render ingredients
   elements.ingredientsList.innerHTML = recipe.ingredients
     .map((ing, idx) => `
       <li data-index="${idx}">
-        ${ing.amount} ${ing.unit} ${ing.item}
+        ${escapeHtml(ing.amount)} ${escapeHtml(ing.unit)} ${escapeHtml(ing.item)}
       </li>
     `).join('');
 
@@ -358,9 +368,9 @@ function renderSteps() {
       
       return `
         <li class="${className}" data-step="${stepNum}">
-          ${step.instruction}
-          ${step.duration ? `<br><small>⏱️ ${step.duration}</small>` : ''}
-          ${step.tip ? `<br><small>💡 ${step.tip}</small>` : ''}
+          ${escapeHtml(step.instruction)}
+          ${step.duration ? `<br><small>⏱️ ${escapeHtml(step.duration)}</small>` : ''}
+          ${step.tip ? `<br><small>💡 ${escapeHtml(step.tip)}</small>` : ''}
         </li>
       `;
     }).join('');
