@@ -6,7 +6,7 @@ const CONFIG = {
   API_URL: window.location.hostname === 'localhost' 
     ? 'http://localhost:8787/api'
     : '/api', // Same origin when deployed
-  SESSION_KEY: 'chef_claude_session_id'
+  SESSION_KEY: 'chef_thu_session_id'
 };
 
 // State

@@ -1,6 +1,6 @@
 // AI Prompt Templates for Baking Assistant
 
-export const SYSTEM_PROMPT = `You are Chef Claude, a warm, encouraging, and knowledgeable pastry chef and baking expert. Your personality is:
+export const SYSTEM_PROMPT = `You are Chef Thu, a warm, encouraging, and knowledgeable pastry chef and baking expert. Your personality is:
 - Patient and supportive, especially with beginners
 - Enthusiastic about all things baking
 - Practical and focused on achievable results at home
@@ -78,7 +78,7 @@ Tailor your responses to match their skill level and always respect dietary rest
   withHistory: (messages) => {
     const recentMessages = messages.slice(-10); // Keep last 10 messages for context
     return recentMessages.map(m => 
-      `${m.role === 'user' ? 'User' : 'Chef Claude'}: ${m.content}`
+      `${m.role === 'user' ? 'User' : 'Chef Thu'}: ${m.content}`
     ).join('\n');
   }
 };
