@@ -25,6 +25,8 @@ function jsonResponse(data, status = 200) {
   });
 }
 
+const MAX_MESSAGE_LENGTH = 4000;
+
 // Helper to get or create session ID
 function getSessionId(request) {
   const url = new URL(request.url);
@@ -105,6 +107,10 @@ async function handleApiRoute(request, env, url) {
 
     if (!message || typeof message !== 'string') {
       return jsonResponse({ error: 'Message is required' }, 400);
+    }
+
+    if (message.length > MAX_MESSAGE_LENGTH) {
+      return jsonResponse({ error: `Message too long (max ${MAX_MESSAGE_LENGTH} characters)` }, 400);
     }
 
     // Get current session state
@@ -235,6 +241,10 @@ async function handleApiRoute(request, env, url) {
   if (path === '/help' && method === 'POST') {
     const body = await request.json();
     const { question } = body;
+
+    if (question && typeof question === 'string' && question.length > MAX_MESSAGE_LENGTH) {
+      return jsonResponse({ error: `Question too long (max ${MAX_MESSAGE_LENGTH} characters)` }, 400);
+    }
 
     // Get session state
     const stateResponse = await sessionStub.fetch(new Request('http://internal/state'));
