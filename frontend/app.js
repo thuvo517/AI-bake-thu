@@ -380,7 +380,7 @@ function updateProgress() {
   if (!state.activeRecipe || !state.activeRecipe.steps) return;
 
   const total = state.activeRecipe.steps.length;
-  const progress = ((state.currentStep - 1) / total) * 100;
+  const progress = (state.currentStep / total) * 100;
   
   elements.progressFill.style.width = `${progress}%`;
   elements.progressText.textContent = `Step ${state.currentStep} of ${total}`;
