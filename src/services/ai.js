@@ -47,17 +47,14 @@ export class AIService {
    * @returns {Object} - Parsed response object
    */
   parseResponse(rawResponse) {
-    // Try to extract JSON from the response
-    try {
-      // Look for JSON block in the response
-      const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
+    // Try each balanced { ... } candidate in the response until one parses
+    for (const candidate of this.findJsonCandidates(rawResponse)) {
+      try {
+        const parsed = JSON.parse(candidate);
         return this.validateAndCleanResponse(parsed);
+      } catch (e) {
+        // Not valid JSON, try the next candidate
       }
-    } catch (e) {
-      // JSON parsing failed, treat as plain message
-      console.log('JSON parse failed, treating as plain message');
     }
 
     // If no valid JSON, return as plain message
@@ -65,6 +62,52 @@ export class AIService {
       type: 'message',
       message: rawResponse.trim()
     };
+  }
+
+  /**
+   * Find every balanced { ... } substring in the text, ignoring braces
+   * inside string literals. More reliable than a single greedy regex
+   * when the model wraps JSON in prose that itself contains braces.
+   * @param {string} text - Raw text to scan
+   * @returns {string[]} - Candidate JSON substrings, in order of appearance
+   */
+  findJsonCandidates(text) {
+    const candidates = [];
+
+    for (let start = text.indexOf('{'); start !== -1; start = text.indexOf('{', start + 1)) {
+      let depth = 0;
+      let inString = false;
+      let escapeNext = false;
+
+      for (let i = start; i < text.length; i++) {
+        const char = text[i];
+
+        if (escapeNext) {
+          escapeNext = false;
+          continue;
+        }
+        if (char === '\\') {
+          escapeNext = true;
+          continue;
+        }
+        if (char === '"') {
+          inString = !inString;
+          continue;
+        }
+        if (inString) continue;
+
+        if (char === '{') depth++;
+        if (char === '}') {
+          depth--;
+          if (depth === 0) {
+            candidates.push(text.slice(start, i + 1));
+            break;
+          }
+        }
+      }
+    }
+
+    return candidates;
   }
 
   /**
