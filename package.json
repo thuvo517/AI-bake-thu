@@ -10,7 +10,8 @@
     "deploy:production": "wrangler deploy --env production",
     "tail": "wrangler tail",
     "pages:dev": "cd frontend && npx serve .",
-    "pages:deploy": "wrangler pages deploy frontend --project-name=ai-baking-assistant-ui"
+    "pages:deploy": "wrangler pages deploy frontend --project-name=ai-baking-assistant-ui",
+    "test": "vitest run"
   },
   "keywords": [
     "cloudflare-workers",
@@ -22,6 +23,7 @@
   "author": "Lam",
   "license": "MIT",
   "devDependencies": {
+    "vitest": "^4.1.10",
     "wrangler": "^4.59.3"
   }
 }
