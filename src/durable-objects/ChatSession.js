@@ -298,6 +298,14 @@ export class ChatSession {
       return { error: 'No active recipe', currentStep: 0 };
     }
 
+    if (!Number.isInteger(stepNumber)) {
+      return {
+        error: 'step must be an integer',
+        currentStep: this.currentStep,
+        totalSteps: this.activeRecipe.steps?.length || 0
+      };
+    }
+
     const totalSteps = this.activeRecipe.steps?.length || 0;
     const newStep = Math.max(1, Math.min(stepNumber, totalSteps));
     

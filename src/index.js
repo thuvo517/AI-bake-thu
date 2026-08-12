@@ -220,6 +220,10 @@ async function handleApiRoute(request, env, url) {
       return jsonResponse({ error: 'Invalid action. Use: next, prev, or set' }, 400);
     }
 
+    if (action === 'set' && !Number.isInteger(step)) {
+      return jsonResponse({ error: 'step must be an integer when action is "set"' }, 400);
+    }
+
     const response = await sessionStub.fetch(new Request('http://internal/step', {
       method: 'POST',
       body: JSON.stringify({ action, step })
