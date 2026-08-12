@@ -2,6 +2,7 @@
 
 import { AIService } from './services/ai.js';
 import { ChatSession } from './durable-objects/ChatSession.js';
+import { isRateLimited } from './utils/rateLimit.js';
 
 // Export Durable Object class
 export { ChatSession };
@@ -26,6 +27,12 @@ function jsonResponse(data, status = 200) {
 }
 
 const MAX_MESSAGE_LENGTH = 4000;
+
+// Each AI call costs real Workers AI usage, so cap how often a single
+// session can hit /chat or /help. Deliberately generous - this is meant to
+// blunt runaway loops (buggy client retries, accidental spam), not to
+// throttle normal usage.
+const AI_RATE_LIMIT = { maxRequests: 20, windowMs: 60 * 1000 };
 
 // Helper to get or create session ID
 function getSessionId(request) {
@@ -111,6 +118,10 @@ async function handleApiRoute(request, env, url) {
 
     if (message.length > MAX_MESSAGE_LENGTH) {
       return jsonResponse({ error: `Message too long (max ${MAX_MESSAGE_LENGTH} characters)` }, 400);
+    }
+
+    if (isRateLimited(`chat:${sessionId}`, AI_RATE_LIMIT)) {
+      return jsonResponse({ error: 'Too many requests, please slow down' }, 429);
     }
 
     // Get current session state
@@ -248,6 +259,10 @@ async function handleApiRoute(request, env, url) {
 
     if (question && typeof question === 'string' && question.length > MAX_MESSAGE_LENGTH) {
       return jsonResponse({ error: `Question too long (max ${MAX_MESSAGE_LENGTH} characters)` }, 400);
+    }
+
+    if (isRateLimited(`help:${sessionId}`, AI_RATE_LIMIT)) {
+      return jsonResponse({ error: 'Too many requests, please slow down' }, 429);
     }
 
     // Get session state
