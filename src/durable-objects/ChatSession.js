@@ -1,5 +1,12 @@
 // ChatSession Durable Object - Persistent State Management
 
+const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // clear session after 24h of inactivity
+
+// Pure helper so it's testable without spinning up a real Durable Object
+export function isSessionExpired(lastActivity, now = Date.now(), ttlMs = SESSION_TTL_MS) {
+  return now - lastActivity >= ttlMs;
+}
+
 export class ChatSession {
   constructor(state, env) {
     this.state = state;
@@ -97,9 +104,10 @@ export class ChatSession {
           });
       }
 
-      // Update last activity timestamp
+      // Update last activity timestamp and push the expiry alarm out
       this.lastActivity = Date.now();
       await this.state.storage.put('lastActivity', this.lastActivity);
+      await this.state.storage.setAlarm(this.lastActivity + SESSION_TTL_MS);
 
       return new Response(JSON.stringify(result), {
         headers: { 
@@ -352,6 +360,16 @@ export class ChatSession {
     await this.state.storage.put('lastActivity', this.lastActivity);
 
     return { cleared: true, newSessionStarted: this.createdAt };
+  }
+
+  // Fired by storage.setAlarm() once the session has been idle for SESSION_TTL_MS.
+  // If activity slipped in after the alarm was scheduled, just push it back out.
+  async alarm() {
+    if (isSessionExpired(this.lastActivity)) {
+      await this.clearSession();
+    } else {
+      await this.state.storage.setAlarm(this.lastActivity + SESSION_TTL_MS);
+    }
   }
 }
 

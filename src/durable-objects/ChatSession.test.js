@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ChatSession } from './ChatSession.js';
+import { ChatSession, isSessionExpired } from './ChatSession.js';
 
 // validatePreferences doesn't touch `this`, so we can call it directly
 // off the prototype without constructing a real Durable Object instance.
@@ -39,5 +39,30 @@ describe('ChatSession.validatePreferences', () => {
     const equipment = Array.from({ length: 25 }, (_, i) => `item${i}`);
     const result = validatePreferences({ equipment });
     expect(result.equipment).toHaveLength(20);
+  });
+});
+
+describe('isSessionExpired', () => {
+  const DAY = 24 * 60 * 60 * 1000;
+
+  it('is not expired right after activity', () => {
+    const now = Date.now();
+    expect(isSessionExpired(now, now)).toBe(false);
+  });
+
+  it('is not expired just under the TTL', () => {
+    const now = Date.now();
+    expect(isSessionExpired(now - (DAY - 1000), now)).toBe(false);
+  });
+
+  it('is expired once the TTL has fully elapsed', () => {
+    const now = Date.now();
+    expect(isSessionExpired(now - DAY, now)).toBe(true);
+  });
+
+  it('respects a custom ttl', () => {
+    const now = Date.now();
+    expect(isSessionExpired(now - 5000, now, 1000)).toBe(true);
+    expect(isSessionExpired(now - 500, now, 1000)).toBe(false);
   });
 });
