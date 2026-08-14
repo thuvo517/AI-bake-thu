@@ -104,6 +104,17 @@ export class ChatSession {
           });
       }
 
+      // Some routes only handle specific methods/actions (e.g. GET on
+      // /preferences, POST with a known action on /step) and fall through
+      // without setting `result` otherwise. Catch that here instead of
+      // silently returning an empty/invalid body.
+      if (result === undefined) {
+        return new Response(JSON.stringify({ error: 'Method not allowed for this endpoint' }), {
+          status: 405,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders }
+        });
+      }
+
       // Update last activity timestamp and push the expiry alarm out
       this.lastActivity = Date.now();
       await this.state.storage.put('lastActivity', this.lastActivity);
