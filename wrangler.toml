@@ -17,22 +17,6 @@ class_name = "ChatSession"
 
 [[migrations]]
 tag = "v1"
-new_classes = ["ChatSession"]
-
-# Environment variables
-[vars]
-ENVIRONMENT = "development"
-
-# Production environment
-[env.production]
-vars = { ENVIRONMENT = "production" }
-
-[[durable_objects.bindings]]
-name = "CHAT_SESSION"
-class_name = "ChatSession"
-
-[[migrations]]
-tag = "v1"
 new_classes = ["BakingSession"]
 
 [[migrations]]
@@ -44,3 +28,7 @@ renamed_classes = [
 # Environment variables
 [vars]
 ENVIRONMENT = "development"
+
+# Production environment
+[env.production]
+vars = { ENVIRONMENT = "production" }
