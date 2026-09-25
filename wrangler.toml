@@ -26,3 +26,21 @@ ENVIRONMENT = "development"
 # Production environment
 [env.production]
 vars = { ENVIRONMENT = "production" }
+
+[[durable_objects.bindings]]
+name = "CHAT_SESSION"
+class_name = "ChatSession"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["BakingSession"]
+
+[[migrations]]
+tag = "v2"
+renamed_classes = [
+  { from = "BakingSession", to = "ChatSession" }
+]
+
+# Environment variables
+[vars]
+ENVIRONMENT = "development"
