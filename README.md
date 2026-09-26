@@ -2,7 +2,7 @@
 
 An AI baking assistant built on Cloudflare Workers, using Llama 3.3 for recipe generation and Durable Objects to keep track of session state. Chat with it about what you want to bake and it walks you through the recipe step by step.
 
-https://3505fe27.ai-baking-assistant-ui.pages.dev/
+https://a0c5a7d7.ai-baking-assistant-ui.pages.dev/
 
 ## Features
 
